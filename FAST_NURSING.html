@@ -1,0 +1,625 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>FAST&NURSING</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Noto+Sans+JP:wght@300;400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<style>
+:root {
+  --bg: #080808; --surface: #111; --card: #181818; --card2: #1e1e1e;
+  --border: #282828; --border2: #333;
+  --accent: #ff2d78; --accent-dim: rgba(255,45,120,0.15); --accent-border: rgba(255,45,120,0.3);
+  --blue: #f5ff00; --blue-dim: rgba(245,255,0,0.1); --blue-border: rgba(245,255,0,0.3);
+  --text: #ebebeb; --text2: #c8c8c8; --muted: #777; --muted2: #555;
+}
+* { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+html,body { height:100%; overflow:hidden; }
+body { background:var(--bg); color:var(--text); font-family:'Noto Sans JP',sans-serif; max-width:480px; margin:0 auto; display:flex; flex-direction:column; height:100%; }
+header { padding:14px 20px 0; border-bottom:1px solid var(--border); background:var(--bg); z-index:100; flex-shrink:0; }
+.header-top { display:flex; align-items:center; justify-content:space-between; margin-bottom:10px; }
+.logo { font-family:'Bebas Neue',sans-serif; font-size:1.9rem; letter-spacing:0.08em; line-height:1; animation:neonFlicker 8s infinite; }
+.logo-fast { color:#f5ff00; text-shadow:0 0 4px #fffff0,0 0 12px #f5ff00,0 0 28px #f5ff00; }
+.logo-nursing { color:#ff2d78; text-shadow:0 0 4px #fff0f5,0 0 12px #ff2d78,0 0 28px #ff2d78; }
+@keyframes neonFlicker { 0%,91%,100%{opacity:1} 92%,94%{opacity:0.3} 93%,95%{opacity:1} }
+.logo-sub { font-size:0.75rem; color:#ff2d78; letter-spacing:0.18em; margin-top:3px; text-shadow:0 0 8px #ff2d7899; }
+.online-badge { display:flex; align-items:center; gap:7px; background:var(--accent-dim); border:1px solid var(--accent-border); border-radius:24px; padding:7px 14px; }
+.dot { width:7px; height:7px; background:var(--accent); border-radius:50%; box-shadow:0 0 6px #ff2d78,0 0 14px #ff2d78; animation:blink 2.2s ease-in-out infinite; }
+@keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.25} }
+.online-num { font-family:'Bebas Neue',sans-serif; font-size:1.1rem; color:var(--accent); }
+.online-label { font-size:0.6rem; color:var(--muted); }
+.tabs { display:flex; margin:0 -20px; }
+.tab { flex:1; padding:11px 4px; text-align:center; font-size:0.65rem; color:var(--muted); cursor:pointer; border-bottom:2px solid transparent; transition:all 0.2s; letter-spacing:0.05em; user-select:none; min-height:42px; display:flex; align-items:center; justify-content:center; }
+.tab.active { color:var(--accent); border-bottom-color:var(--accent); }
+.tab.active-blue { color:var(--blue); border-bottom-color:var(--blue); }
+.screen { display:none; flex:1; flex-direction:column; overflow:hidden; }
+.screen.active { display:flex; }
+.mission-banner { margin:12px 16px 8px; background:linear-gradient(135deg,#160010,#0a0008); border:1px solid #281020; border-left:3px solid var(--accent); border-radius:10px; padding:10px 14px; flex-shrink:0; }
+.mission-label { font-size:0.56rem; color:var(--accent); letter-spacing:0.25em; margin-bottom:3px; }
+.mission-text { font-size:0.84rem; color:var(--text2); line-height:1.5; }
+.mission-text strong { color:var(--text); }
+.chat-area { flex:1; overflow-y:auto; padding:6px 16px 12px; display:flex; flex-direction:column; gap:6px; -webkit-overflow-scrolling:touch; }
+.chat-area::-webkit-scrollbar { width:2px; }
+.chat-area::-webkit-scrollbar-thumb { background:var(--border2); border-radius:2px; }
+.msg { padding:11px 14px 10px; border-radius:12px; background:var(--card); border:1px solid var(--border); animation:fadeUp 0.28s ease; }
+@keyframes fadeUp { from{opacity:0;transform:translateY(8px)} to{opacity:1;transform:translateY(0)} }
+.msg-header { display:flex; align-items:baseline; gap:8px; margin-bottom:5px; }
+.msg-name { font-size:0.74rem; font-weight:500; color:#ff2d78; }
+.msg-age { font-size:0.64rem; color:var(--muted); }
+.msg-time { font-size:0.6rem; color:var(--muted2); margin-left:auto; }
+.msg-body { font-size:0.9rem; line-height:1.75; color:var(--text); word-break:break-word; }
+.msg-reaction { display:flex; gap:6px; margin-top:9px; flex-wrap:wrap; align-items:center; }
+.reaction-btn { font-size:0.7rem; background:var(--surface); border:1px solid var(--border2); border-radius:20px; padding:4px 11px; cursor:pointer; color:#bbb; transition:all 0.15s; min-height:30px; }
+.reaction-btn.active { border-color:var(--accent); color:#ff2d78; background:var(--accent-dim); }
+.reply-btn { font-size:0.66rem; background:var(--accent-dim); border:1px solid var(--accent-border); border-radius:20px; padding:4px 11px; color:var(--accent); cursor:pointer; min-height:30px; }
+.replies-area { margin-top:9px; border-left:2px solid rgba(255,45,120,0.2); padding-left:12px; display:flex; flex-direction:column; gap:6px; }
+.reply-msg { background:#121212; border-radius:8px; padding:8px 12px; animation:fadeUp 0.22s ease; }
+.reply-msg .msg-name { font-size:0.68rem; }
+.reply-msg .msg-body { font-size:0.84rem; color:var(--text2); line-height:1.65; }
+.system-msg { text-align:center; font-size:0.64rem; color:var(--muted); padding:6px 0; }
+.system-msg span { color:#ff69b4; }
+.race-screen { flex:1; overflow-y:auto; padding:14px 16px; -webkit-overflow-scrolling:touch; }
+.race-intro { font-size:0.8rem; color:var(--muted); margin-bottom:14px; line-height:1.65; }
+.race-card { background:var(--card); border:1px solid var(--border); border-radius:14px; padding:16px 18px; margin-bottom:10px; position:relative; overflow:hidden; transition:all 0.2s; }
+.race-card::before { content:''; position:absolute; left:0; top:0; bottom:0; width:3px; background:var(--blue); opacity:0.4; transition:all 0.2s; }
+.race-card.joined { border-color:var(--accent-border); background:#140010; }
+.race-card.joined::before { background:var(--accent); opacity:1; }
+.race-header { display:flex; align-items:center; justify-content:space-between; margin-bottom:6px; }
+.race-name { font-family:'Bebas Neue',sans-serif; font-size:1.25rem; letter-spacing:0.1em; color:var(--accent); }
+.race-count { font-size:0.67rem; color:var(--blue); background:var(--blue-dim); border:1px solid var(--blue-border); border-radius:10px; padding:3px 9px; }
+.race-desc { font-size:0.8rem; color:#aaa; line-height:1.55; margin-bottom:9px; }
+.race-tags { display:flex; gap:5px; flex-wrap:wrap; }
+.race-tag { font-size:0.63rem; color:var(--muted); background:var(--surface); border:1px solid var(--border); border-radius:4px; padding:2px 7px; }
+.join-btn { margin-top:13px; width:100%; background:transparent; border:1px solid var(--accent); border-radius:10px; padding:13px; color:var(--accent); font-family:'Bebas Neue',sans-serif; font-size:1rem; letter-spacing:0.2em; cursor:pointer; transition:all 0.2s; min-height:48px; box-shadow:0 0 8px #ff2d7844; }
+.join-btn:active { background:var(--accent-dim); }
+.join-btn.joined-state { background:var(--accent-dim); }
+.input-area { background:var(--bg); border-top:1px solid var(--border); padding:10px 16px 14px; flex-shrink:0; display:flex; flex-direction:column; }
+.replying-banner { display:none; align-items:center; gap:8px; background:var(--accent-dim); border-left:2px solid var(--accent); padding:7px 12px; margin-bottom:8px; border-radius:0 8px 8px 0; font-size:0.72rem; color:var(--muted); }
+.replying-banner.show { display:flex; }
+.replying-banner span { color:var(--accent); font-weight:500; }
+.cancel-reply { margin-left:auto; cursor:pointer; color:var(--muted); font-size:1rem; padding:0 4px; min-width:28px; text-align:center; }
+.user-bar { display:flex; align-items:center; gap:8px; padding:0 0 9px; }
+.user-bar-name { font-size:0.75rem; color:var(--accent); font-weight:500; }
+.user-bar-age { font-size:0.68rem; color:var(--muted); }
+.user-bar-edit { margin-left:auto; font-size:0.62rem; color:var(--muted); cursor:pointer; background:var(--surface); border:1px solid var(--border); border-radius:10px; padding:3px 8px; }
+.input-row { display:flex; gap:10px; align-items:flex-end; }
+.text-input { flex:1; background:var(--card2); border:1px solid var(--border2); border-radius:12px; padding:11px 15px; color:var(--text); font-family:'Noto Sans JP',sans-serif; font-size:0.9rem; resize:none; outline:none; line-height:1.5; max-height:100px; transition:border-color 0.2s; }
+.text-input:focus { border-color:var(--accent-border); }
+.text-input::placeholder { color:var(--muted2); }
+.send-btn { background:var(--accent); border:none; border-radius:12px; width:48px; height:48px; cursor:pointer; display:flex; align-items:center; justify-content:center; box-shadow:0 0 12px #ff2d78,0 0 28px #ff2d7855; flex-shrink:0; transition:transform 0.15s; }
+.send-btn:active { transform:scale(0.93); }
+.send-btn svg { width:20px; height:20px; fill:white; }
+.setup-modal { position:fixed; inset:0; z-index:500; background:rgba(0,0,0,0.85); display:flex; align-items:flex-end; }
+.setup-modal.hidden { display:none; }
+.setup-sheet { background:#111; width:100%; max-width:480px; margin:0 auto; border-radius:20px 20px 0 0; padding:28px 24px 40px; border-top:1px solid var(--border2); animation:slideUp 0.3s ease; }
+@keyframes slideUp { from{transform:translateY(100%)} to{transform:translateY(0)} }
+.setup-title { font-family:'Bebas Neue',sans-serif; font-size:1.5rem; color:var(--accent); letter-spacing:0.1em; margin-bottom:6px; }
+.setup-desc { font-size:0.78rem; color:var(--muted); margin-bottom:22px; line-height:1.6; }
+.setup-field { margin-bottom:14px; }
+.setup-field label { display:block; font-size:0.65rem; color:var(--muted); letter-spacing:0.1em; margin-bottom:6px; }
+.setup-field input, .setup-field select { width:100%; background:var(--card2); border:1px solid var(--border2); border-radius:10px; padding:13px 16px; color:var(--text); font-family:'Noto Sans JP',sans-serif; font-size:0.92rem; outline:none; transition:border-color 0.2s; }
+.setup-field input:focus { border-color:var(--accent-border); }
+.setup-field input::placeholder { color:var(--muted2); }
+.setup-btn { width:100%; background:var(--accent); border:none; border-radius:12px; padding:15px; color:white; font-family:'Bebas Neue',sans-serif; font-size:1.1rem; letter-spacing:0.2em; cursor:pointer; margin-top:6px; box-shadow:0 0 20px #ff2d7866; }
+.setup-skip { font-size:0.7rem; color:var(--muted); text-align:center; margin-top:12px; cursor:pointer; text-decoration:underline; }
+.toast { position:fixed; bottom:90px; left:50%; transform:translateX(-50%) translateY(12px); background:var(--accent); color:white; font-size:0.74rem; padding:8px 18px; border-radius:24px; opacity:0; transition:all 0.3s; pointer-events:none; z-index:300; cursor:pointer; box-shadow:0 0 14px #ff2d78; }
+.toast.show { opacity:1; transform:translateX(-50%) translateY(0); pointer-events:auto; }
+.connecting { text-align:center; font-size:0.65rem; color:var(--muted); padding:20px; }
+</style>
+</head>
+<body>
+
+<div class="setup-modal hidden" id="setupModal">
+  <div class="setup-sheet">
+    <div class="setup-title">コールサインを入力</div>
+    <div class="setup-desc">コードネームと子の月齢を設定します。</div>
+    <div class="setup-field">
+      <label>CODENAME</label>
+      <input type="text" id="setupName" placeholder="例：睡眠障害2億円" maxlength="20" autocomplete="off">
+    </div>
+    <div class="setup-field">
+      <label>RACE（月齢）</label>
+      <select id="setupAge">
+        <option value="">選択してください</option>
+        <option value="0ヶ月">0ヶ月</option>
+        <option value="1ヶ月">1ヶ月</option>
+        <option value="2ヶ月">2ヶ月</option>
+        <option value="3ヶ月">3ヶ月</option>
+        <option value="4ヶ月">4ヶ月</option>
+        <option value="5ヶ月">5ヶ月</option>
+        <option value="6ヶ月">6ヶ月</option>
+        <option value="7ヶ月">7ヶ月</option>
+        <option value="8ヶ月">8ヶ月</option>
+        <option value="9ヶ月">9ヶ月</option>
+        <option value="10ヶ月">10ヶ月</option>
+        <option value="11ヶ月">11ヶ月</option>
+        <option value="12ヶ月">12ヶ月</option>
+        <option value="授乳中（1歳以上）">授乳中（1歳以上）</option>
+        <option value="卒乳・断乳">卒乳・断乳（PIT CREW）</option>
+      </select>
+    </div>
+    <button class="setup-btn" id="setupSaveBtn">夜泣きレーン合流</button>
+    <div class="setup-skip" id="setupSkipBtn">あとで設定する</div>
+  </div>
+</div>
+
+<header>
+  <div class="header-top">
+    <div>
+      <div class="logo">
+        <span class="logo-fast">FAST</span><span style="color:#00d4ff;text-shadow:0 0 12px #00d4ff">&</span><span class="logo-nursing">NURSING</span>
+      </div>
+      <div class="logo-sub">真夜中の授乳ドリフト</div>
+    </div>
+    <div class="online-badge">
+      <div class="dot"></div>
+      <div>
+        <div class="online-num" id="onlineCount">—</div>
+        <div class="online-label">オンライン</div>
+      </div>
+    </div>
+  </div>
+  <div class="tabs">
+    <div class="tab active-blue" data-tab="main">MAIN STREET</div>
+    <div class="tab" data-tab="race">RACE JOIN</div>
+    <div class="tab" data-tab="my-race">MY RACE</div>
+  </div>
+</header>
+
+<div class="screen active" id="screen-main">
+  <div class="mission-banner">
+    <div class="mission-label">■ TONIGHT'S MISSION</div>
+    <div class="mission-text" id="missionText">接続中...</div>
+  </div>
+  <div class="chat-area" id="chatMain">
+    <div class="connecting">接続中...</div>
+  </div>
+  <div class="input-area" id="inputArea" style="display:none">
+    <div class="replying-banner" id="replyingBanner">
+      ↩ <span id="replyingToName"></span> に返信中
+      <span class="cancel-reply" id="cancelReplyBtn">✕</span>
+    </div>
+    <div class="user-bar">
+      <span class="user-bar-name" id="userBarName"></span>
+      <span class="user-bar-age" id="userBarAge"></span>
+      <span class="user-bar-edit" id="editProfileBtn">編集</span>
+    </div>
+    <div class="input-row">
+      <textarea class="text-input" id="msgInput" placeholder="今夜の報告をどうぞ" rows="1"></textarea>
+      <button class="send-btn" id="sendBtn">
+        <svg viewBox="0 0 24 24"><path d="M2 21l21-9L2 3v7l15 2-15 2v7z"/></svg>
+      </button>
+    </div>
+  </div>
+</div>
+
+<div class="screen" id="screen-race">
+  <div class="race-screen">
+    <div class="race-intro">月齢でコースを選んでジョイン。同じステージの戦士と繋がれる。</div>
+    <div class="race-card" id="card-0-3">
+      <div class="race-header"><div class="race-name">RACE 0～3</div><div class="race-count">● <span id="cnt-0-3">—</span> RACERS</div></div>
+      <div class="race-desc">新生児チーム。生きてるだけで100点。</div>
+      <div class="race-tags"><span class="race-tag">背中スイッチ</span><span class="race-tag">3時間おき</span><span class="race-tag">24時間営業</span></div>
+      <button class="join-btn" data-race="0-3">RACE 0-3 に参加する</button>
+    </div>
+    <div class="race-card" id="card-4-6">
+      <div class="race-header"><div class="race-name">RACE 4～6</div><div class="race-count">● <span id="cnt-4-6">—</span> RACERS</div></div>
+      <div class="race-desc">少し慣れてきたけどまだしんどい。夜明けは見えてきた…気がする。</div>
+      <div class="race-tags"><span class="race-tag">離乳食どうする</span><span class="race-tag">寝返り始まった</span><span class="race-tag">夜泣きはまだある</span></div>
+      <button class="join-btn" data-race="4-6">RACE 4-6 に参加する</button>
+    </div>
+    <div class="race-card" id="card-7-12">
+      <div class="race-header"><div class="race-name">RACE 7～12</div><div class="race-count">● <span id="cnt-7-12">—</span> RACERS</div></div>
+      <div class="race-desc">先輩ポジション。伝えたいことがある。</div>
+      <div class="race-tags"><span class="race-tag">夜間断乳検討中</span><span class="race-tag">つかまり立ち</span><span class="race-tag">卒乳いつ</span></div>
+      <button class="join-btn" data-race="7-12">RACE 7-12 に参加する</button>
+    </div>
+    <div class="race-card" id="card-pit">
+      <div class="race-header"><div class="race-name">PIT CREW</div><div class="race-count">● <span id="cnt-pit">—</span> RACERS</div></div>
+      <div class="race-desc">先輩風吹かせに来てください。あなたの道が誰かの地図になる。</div>
+      <div class="race-tags"><span class="race-tag">卒乳済み</span><span class="race-tag">断乳成功</span></div>
+      <button class="join-btn" data-race="pit">PIT CREW に参加する</button>
+    </div>
+  </div>
+</div>
+
+<div class="screen" id="screen-my-race">
+  <div class="mission-banner">
+    <div class="mission-label">■ あなたのレース</div>
+    <div class="mission-text" id="myRaceText">RACE JOIN からコースを選ぶと仲間が現れる</div>
+  </div>
+  <div class="chat-area" id="chatRace">
+    <div class="system-msg">← RACE JOIN タブでコースを選ぶ</div>
+  </div>
+  <div class="input-area" id="inputAreaRace" style="display:none">
+    <div class="user-bar">
+      <span class="user-bar-name" id="userBarNameRace"></span>
+      <span class="user-bar-age" id="userBarAgeRace"></span>
+      <span class="user-bar-edit" id="editProfileBtnRace">編集</span>
+    </div>
+    <div class="input-row">
+      <textarea class="text-input" id="msgInputRace" placeholder="レースの報告をどうぞ" rows="1"></textarea>
+      <button class="send-btn" id="sendBtnRace">
+        <svg viewBox="0 0 24 24"><path d="M2 21l21-9L2 3v7l15 2-15 2v7z"/></svg>
+      </button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast">新着メッセージ ↓</div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import { getDatabase, ref, push, onChildAdded, onValue, set, onDisconnect } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
+
+const app = initializeApp({
+  apiKey: "AIzaSyBXR7FtokI7QXEdf4xe7e5a9-FsXYtx2GI",
+  authDomain: "midnightdrift.firebaseapp.com",
+  projectId: "midnightdrift",
+  storageBucket: "midnightdrift.firebasestorage.app",
+  messagingSenderId: "295468882676",
+  appId: "1:295468882676:web:f4fe4c430d394cc43d1ca1",
+  databaseURL: "https://midnightdrift-default-rtdb.firebaseio.com"
+});
+const db = getDatabase(app);
+
+// ===== 状態 =====
+let myName = '';
+let myAge = '';
+let currentTab = 'main';
+let joinedRace = null;
+let replyingToId = null;
+let replyingInRace = false;
+
+// ===== プロフィール =====
+function loadProfile() {
+  try {
+    const saved = localStorage.getItem('md_profile');
+    if (saved) {
+      const p = JSON.parse(saved);
+      myName = p.name || '';
+      myAge = p.age || '';
+    }
+  } catch(e) {}
+  if (myName) {
+    showInput();
+    updateBars();
+  } else {
+    document.getElementById('setupModal').classList.remove('hidden');
+  }
+}
+
+function saveProfile() {
+  const n = document.getElementById('setupName').value.trim();
+  const a = document.getElementById('setupAge').value;
+  myName = n || '名無しの兵士';
+  myAge = a || '?ヶ月';
+  try { localStorage.setItem('md_profile', JSON.stringify({name:myName,age:myAge})); } catch(e) {}
+  document.getElementById('setupModal').classList.add('hidden');
+  showInput();
+  updateBars();
+}
+
+function skipSetup() {
+  myName = '名無しの兵士';
+  myAge = '?ヶ月';
+  document.getElementById('setupModal').classList.add('hidden');
+  showInput();
+  updateBars();
+}
+
+function showInput() {
+  document.getElementById('inputArea').style.display = 'flex';
+}
+
+function updateBars() {
+  document.getElementById('userBarName').textContent = myName;
+  document.getElementById('userBarAge').textContent = myAge;
+  document.getElementById('userBarNameRace').textContent = myName;
+  document.getElementById('userBarAgeRace').textContent = myAge;
+}
+
+function openSetup() {
+  document.getElementById('setupName').value = (myName !== '名無しの兵士') ? myName : '';
+  document.getElementById('setupAge').value = myAge || '';
+  document.getElementById('setupModal').classList.remove('hidden');
+}
+
+// ===== タブ =====
+function switchTab(tab) {
+  currentTab = tab;
+  document.querySelectorAll('.tab').forEach(t => {
+    t.classList.remove('active','active-blue');
+    if (t.dataset.tab === tab) {
+      t.classList.add(tab === 'race' ? 'active' : 'active-blue');
+    }
+  });
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById('screen-' + tab).classList.add('active');
+  setTimeout(() => {
+    if (tab === 'main') scrollBottom('chatMain');
+    if (tab === 'my-race') scrollBottom('chatRace');
+  }, 50);
+}
+
+// ===== レース =====
+function joinRace(raceId) {
+  joinedRace = raceId;
+  const labels = {'0-3':'RACE 0～3','4-6':'RACE 4～6','7-12':'RACE 7～12','pit':'PIT CREW'};
+
+  document.querySelectorAll('.race-card').forEach(c => c.classList.remove('joined'));
+  document.querySelectorAll('.join-btn').forEach(b => {
+    b.classList.remove('joined-state');
+    b.textContent = (labels[b.dataset.race] || b.dataset.race) + ' に参加する';
+  });
+
+  const card = document.getElementById('card-' + raceId);
+  const btn = document.querySelector('.join-btn[data-race="' + raceId + '"]');
+  if (card) card.classList.add('joined');
+  if (btn) { btn.classList.add('joined-state'); btn.textContent = '✓ 参加中 — ' + labels[raceId]; }
+  document.getElementById('myRaceText').innerHTML = '<strong>' + labels[raceId] + '</strong> にジョイン中';
+  document.getElementById('inputAreaRace').style.display = 'flex';
+  updateBars();
+
+  const chatRace = document.getElementById('chatRace');
+  chatRace.innerHTML = '';
+  addSys(chatRace, myName + ' が ' + labels[raceId] + ' に参加しました');
+
+  const path = 'races/' + raceId.replace(/-/g,'_') + '/messages';
+  let first = true;
+  onChildAdded(ref(db, path), snap => {
+    const msg = snap.val();
+    if (!msg) return;
+    msg.id = snap.key;
+    renderMsg(msg, chatRace, true);
+    if (first || atBottom(chatRace)) scrollBottom('chatRace');
+    listenReplies('races/' + raceId.replace(/-/g,'_') + '/replies/' + snap.key, snap.key);
+  });
+  setTimeout(() => { first = false; scrollBottom('chatRace'); }, 1500);
+  setTimeout(() => switchTab('my-race'), 300);
+}
+
+// ===== 送信 =====
+function sendMain() {
+  const input = document.getElementById('msgInput');
+  const text = input.value.trim();
+  if (!text) return;
+
+  if (replyingToId && !replyingInRace) {
+    push(ref(db, 'main/replies/' + replyingToId), {name:myName, age:myAge, text:text, timestamp:Date.now()})
+      .catch(e => alert('送信失敗: ' + e.message));
+    input.value = '';
+    cancelReply();
+    return;
+  }
+
+  push(ref(db, 'main/messages'), {name:myName, age:myAge, text:text, timestamp:Date.now()})
+    .catch(e => alert('送信失敗: ' + e.message));
+  input.value = '';
+  input.style.height = 'auto';
+  setTimeout(() => scrollBottom("chatMain"), 500);
+}
+
+function sendRace() {
+  if (!joinedRace) return;
+  const input = document.getElementById('msgInputRace');
+  const text = input.value.trim();
+  if (!text) return;
+
+  if (replyingToId && replyingInRace) {
+    push(ref(db, 'races/' + joinedRace.replace(/-/g,'_') + '/replies/' + replyingToId), {name:myName, age:myAge, text:text, timestamp:Date.now()})
+      .catch(e => alert('返信失敗: ' + e.message));
+    input.value = '';
+    input.placeholder = 'レースの報告をどうぞ';
+    replyingToId = null;
+    return;
+  }
+
+  push(ref(db, 'races/' + joinedRace.replace(/-/g,'_') + '/messages'), {name:myName, age:myAge, text:text, timestamp:Date.now()})
+    .catch(e => alert('送信失敗: ' + e.message));
+  input.value = '';
+  input.style.height = 'auto';
+  setTimeout(() => scrollBottom("chatRace"), 500);
+}
+
+// ===== 返信 =====
+function startReply(msgId, name, inRace) {
+  replyingToId = msgId;
+  replyingInRace = inRace;
+  if (inRace) {
+    const inp = document.getElementById('msgInputRace');
+    inp.placeholder = name + ' への返信…';
+    inp.focus();
+  } else {
+    document.getElementById('replyingBanner').classList.add('show');
+    document.getElementById('replyingToName').textContent = name;
+    const inp = document.getElementById('msgInput');
+    inp.placeholder = name + ' への返信…';
+    inp.focus();
+  }
+}
+
+function cancelReply() {
+  replyingToId = null;
+  document.getElementById('replyingBanner').classList.remove('show');
+  document.getElementById('msgInput').placeholder = '今夜の報告をどうぞ';
+}
+
+// ===== 描画 =====
+function renderMsg(data, container, inRace) {
+  const msgId = data.id || ('m' + Date.now() + Math.floor(Math.random()*9999));
+  const div = document.createElement('div');
+  div.className = 'msg';
+  div.dataset.id = msgId;
+  div.innerHTML =
+    '<div class="msg-header">' +
+      '<span class="msg-name">' + esc(data.name||'名無し') + '</span>' +
+      '<span class="msg-age">' + esc(data.age||'?ヶ月') + '</span>' +
+      '<span class="msg-time">' + fmt(data.timestamp) + '</span>' +
+    '</div>' +
+    '<div class="msg-body">' + esc(data.text||'') + '</div>' +
+    '<div class="msg-reaction">' +
+      '<button class="reaction-btn">わかる 0</button>' +
+      '<button class="reaction-btn">笑 0</button>' +
+      '<button class="reply-btn">↩ 返信</button>' +
+    '</div>' +
+    '<div class="replies-area" id="replies-' + msgId + '"></div>';
+
+  div.querySelectorAll('.reaction-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const parts = btn.textContent.trim().split(' ');
+      const label = parts.slice(0,-1).join(' ');
+      let n = parseInt(parts[parts.length-1]) || 0;
+      const active = btn.classList.toggle('active');
+      n = active ? n+1 : n-1;
+      btn.textContent = label + ' ' + Math.max(0,n);
+    });
+  });
+
+  div.querySelector('.reply-btn').addEventListener('click', () => {
+    startReply(msgId, data.name||'名無し', !!inRace);
+  });
+
+  container.appendChild(div);
+}
+
+function renderReply(msgId, data) {
+  const area = document.getElementById('replies-' + msgId);
+  if (!area) return;
+  const div = document.createElement('div');
+  div.className = 'reply-msg';
+  div.innerHTML =
+    '<div class="msg-header">' +
+      '<span class="msg-name">' + esc(data.name||'名無し') + '</span>' +
+      '<span class="msg-age">' + esc(data.age||'') + '</span>' +
+      '<span class="msg-time">' + fmt(data.timestamp) + '</span>' +
+    '</div>' +
+    '<div class="msg-body">' + esc(data.text||'') + '</div>';
+  area.appendChild(div);
+  setTimeout(() => { const chatId = currentTab === 'my-race' ? 'chatRace' : 'chatMain'; scrollBottom(chatId); }, 100);
+}
+
+const _listenedPaths = new Set();
+function listenReplies(path, msgId) {
+  if (_listenedPaths.has(path)) return;
+  _listenedPaths.add(path);
+  onChildAdded(ref(db, path), snap => {
+    const r = snap.val();
+    if (r) renderReply(msgId, r);
+  });
+}
+
+function addSys(container, text) {
+  const d = document.createElement('div');
+  d.className = 'system-msg';
+  d.innerHTML = '<span>' + esc(text) + '</span>';
+  container.appendChild(d);
+}
+
+// ===== メイン初期化 =====
+const chatMain = document.getElementById('chatMain');
+chatMain.innerHTML = '';
+const now = new Date();
+const todayReset = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 8, 0, 0).getTime();
+const lastReset = now.getTime() < todayReset ? todayReset - 86400000 : todayReset;
+let firstMain = true;
+let mainCount = 0;
+
+onChildAdded(ref(db, 'main/messages'), snap => {
+  const msg = snap.val();
+  if (!msg) return;
+  if (msg.timestamp && msg.timestamp < lastReset) return;
+  msg.id = snap.key;
+  renderMsg(msg, chatMain, false);
+  mainCount++;
+  if (firstMain || atBottom(chatMain)) scrollBottom('chatMain');
+  else showToast();
+  listenReplies('main/replies/' + snap.key, snap.key);
+});
+
+setTimeout(() => {
+  firstMain = false;
+  scrollBottom('chatMain');
+  if (mainCount === 0) addSys(chatMain, '今夜最初の報告をどうぞ');
+}, 2000);
+
+// ===== オンライン人数 =====
+const myKey = 'u' + Date.now() + Math.floor(Math.random()*99999);
+const presRef = ref(db, 'presence/' + myKey);
+set(presRef, 1).catch(() => {});
+onDisconnect(presRef).remove().catch(() => {});
+
+onValue(ref(db, 'presence'), snap => {
+  let n = 0;
+  if (snap.exists()) snap.forEach(() => { n++; });
+  n = Math.max(n, 1);
+  document.getElementById('onlineCount').textContent = n;
+  document.getElementById('missionText').innerHTML = '現在<strong>' + n + '人</strong>が深夜ミッション実行中。あなただけじゃない。';
+  const ratios = {'0-3':0.3,'4-6':0.35,'7-12':0.2,'pit':0.15};
+  ['0-3','4-6','7-12','pit'].forEach(id => {
+    const el = document.getElementById('cnt-' + id);
+    if (el) el.textContent = Math.max(1, Math.floor(n * ratios[id]));
+  });
+});
+
+// ===== イベント =====
+document.querySelectorAll('.tab').forEach(t => t.addEventListener('click', () => switchTab(t.dataset.tab)));
+document.querySelectorAll('.join-btn').forEach(b => b.addEventListener('click', () => joinRace(b.dataset.race)));
+document.getElementById('sendBtn').addEventListener('click', sendMain);
+document.getElementById('sendBtnRace').addEventListener('click', sendRace);
+document.getElementById('setupSaveBtn').addEventListener('click', saveProfile);
+document.getElementById('setupSkipBtn').addEventListener('click', skipSetup);
+document.getElementById('editProfileBtn').addEventListener('click', openSetup);
+document.getElementById('editProfileBtnRace').addEventListener('click', openSetup);
+document.getElementById('cancelReplyBtn').addEventListener('click', cancelReply);
+document.getElementById('toast').addEventListener('click', () => {
+  scrollBottom(currentTab === 'my-race' ? 'chatRace' : 'chatMain');
+  document.getElementById('toast').classList.remove('show');
+});
+
+['msgInput','msgInputRace'].forEach(id => {
+  const el = document.getElementById(id);
+  el.addEventListener('input', function() {
+    this.style.height = 'auto';
+    this.style.height = Math.min(this.scrollHeight, 100) + 'px';
+  });
+  el.addEventListener('keydown', function(e) {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
+      id === 'msgInput' ? sendMain() : sendRace();
+    }
+  });
+});
+
+// ===== ユーティリティ =====
+function scrollBottom(id) {
+  const el = document.getElementById(id);
+  if (el) el.scrollTop = el.scrollHeight;
+}
+
+function atBottom(el) {
+  return el.scrollHeight - el.scrollTop - el.clientHeight < 80;
+}
+
+function showToast() {
+  const t = document.getElementById('toast');
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 3000);
+}
+
+function fmt(ts) {
+  const d = ts ? new Date(ts) : new Date();
+  return d.getHours().toString().padStart(2,'0') + ':' + d.getMinutes().toString().padStart(2,'0');
+}
+
+function esc(str) {
+  if (!str) return '';
+  return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+// ===== 起動 =====
+loadProfile();
+</script>
+</body>
+</html>
